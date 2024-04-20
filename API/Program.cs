@@ -14,6 +14,13 @@ builder.Services.AddDbContext<DataContext>(option =>
 {
     option.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3002");
+    });
+});
 
 var app = builder.Build();
 
@@ -26,7 +33,9 @@ if (app.Environment.IsDevelopment()) // on use swagger in dev
 
 // app.UseHttpsRedirection(); // create simple http app for now
 
-// app.UseAuthorization(); // no auth setup just now
+app.UseCors("CorsPolicy");
+
+app.UseAuthorization(); // no auth setup just now
 
 app.MapControllers(); // register route and endpoints in ./API/Controllers/WeatherForecastController.cs
 
